@@ -1,4 +1,4 @@
-import  { useState, useMemo } from "react";
+import { useState, useMemo, forwardRef } from "react";
 import Filterbtn from "./Filterbtn";
 
 const genres = [
@@ -14,7 +14,7 @@ const genres = [
   "Punjabi",
 ];
 
-function Filterdiv() {
+const Filterdiv = forwardRef<HTMLDivElement>((_, ref) => {
   const [showAll, setShowAll] = useState(false);
 
   const visibleGenres = useMemo(
@@ -23,8 +23,7 @@ function Filterdiv() {
   );
 
   return (
-    <section className="mx-auto mt-12 mb-8 w-[96%] max-w-7xl">
-
+    <section ref={ref} className="mx-auto mt-12 mb-8 w-[96%] max-w-7xl">
 
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-primaryText">
@@ -46,7 +45,6 @@ function Filterdiv() {
         </button>
       </div>
 
-
       <div className="mt-6 flex flex-wrap gap-3">
         {visibleGenres.map((genre) => (
           <Filterbtn key={genre} label={genre} />
@@ -55,6 +53,6 @@ function Filterdiv() {
 
     </section>
   );
-}
+});
 
 export default Filterdiv;

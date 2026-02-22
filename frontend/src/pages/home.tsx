@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useRef } from "react";
 import Filterdiv from "@/components/Filters/Filterdiv";
 import Hero from "@/components/Hero/Hero";
-import NavBar from "@/components/Navbar/navBar";
-import Sidebar from "@/components/Sidebar/Sidebar";
 import PlaylistCard from "@/components/PlaylistCard/PlaylistCard";
 
 const Home: React.FC = () => {
+  const filterRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToFilters = () => {
+    filterRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
   const playlists = [
     {
       id: 1,
@@ -35,55 +41,23 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div
-      className="
-        h-full
-        flex
-        bg-gradient-to-br
-        from-[#ebdefe] from-10%
-        via-[#cfd7ff]/80 via-45%
-        to-[#f4ffff]
-      "
-    >
-      <aside className="shrink-0 ">
-        <Sidebar />
-      </aside>
+    <section className="flex flex-col gap-6 pb-10">
 
-      <main className="flex-1 flex flex-col">
-        <NavBar />
+      <Hero onExploreClick={scrollToFilters} />
 
-        <section className="flex flex-col gap-6 pb-10">
-          <Hero />
+      <Filterdiv ref={filterRef} />
 
-          <Filterdiv />
+      <div className="px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {playlists.map((playlist) => (
+            <PlaylistCard key = {playlist.id}
+              playlist={playlist}
+            />
+          ))}
+        </div>
+      </div>
 
-          <div className="px-6">
-            {
-            /* <h2 className="text-4xl font-bold font-headingText text-primaryText mb-6 flex flex-col gap-2">
-              Vibe Check
-              <span className="text-sm font-light text-secondaryText font-subHeadingText tracking-wider">
-                Playlist to match your current mood
-              </span>
-            </h2> */
-            }
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {playlists.map((playlist) => (
-                <PlaylistCard
-                  key={playlist.id}
-                  title={playlist.title}
-                  subtitle={playlist.subtitle}
-                  image={playlist.image}
-                  likes={playlist.likes}
-                  songs={playlist.songs}
-                  featured={playlist.featured}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+    </section>
   );
 };
 

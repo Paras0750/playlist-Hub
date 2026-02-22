@@ -4,11 +4,12 @@ import ShareBtn from "./shareBtn";
 import Notification from "./notification";
 import Profile from "./profile";
 
-const NavBar: React.FC = () => {
+const NavBar: React.FC = () => {//todo: reactfc vs jsx element
+
   return (
     <div className="flex items-center justify-between  p-4 text-black mt-8">
       <SearchBar />
-      <div className="mx-2 flex items-center gap-[1vw]">
+      <div className="mx-2 flex items-center gap-[1vw]  flex-col ">
         <Notification />
         <ShareBtn />
         <Profile />

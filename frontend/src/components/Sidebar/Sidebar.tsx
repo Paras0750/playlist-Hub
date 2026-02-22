@@ -3,11 +3,13 @@ import SideSub from "./SideSub";
 import SideFoot from "./SideFoot";
 import { Plus } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
 const NewPlaylistBtn: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-primaryText w-[80%] font-subHeadingText flex cursor-pointer
        items-center justify-center gap-2 rounded-full p-2 text-sm font-light 
-       tracking-wider text-white transition-transform duration-300 hover:scale-105 ">
+       tracking-wider text-white transition-transform duration-300 hover:scale-105 " onClick={() => navigate("/create")}>
       <Plus className="h-4 w-4" />
       New Playlist
     </div>

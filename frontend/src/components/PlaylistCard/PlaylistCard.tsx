@@ -1,69 +1,120 @@
-import React from "react";
-import { Heart, Clock, Play } from "lucide-react";
+import { Play, Heart, Clock } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toggleSave } from "@/features/playlist/playlistSlice";
+import type { RootState } from "@/app/store";
 
-interface PlaylistCardProps {
+interface Playlist {
+  id: number;
   title: string;
   subtitle: string;
   image: string;
-  likes: string;
-  songs: number;
+  likes?: string;
+  songs?: number;
   featured?: boolean;
 }
 
-const PlaylistCard: React.FC<PlaylistCardProps> = ({
-  title,
-  subtitle,
-  image,
-  likes,
-  songs,
-  featured = false,
-}) => {
-  return (
-    <div className="w-[23vw] rounded-3xl bg-linear-to-br from-[#fbf7fc] from-50% to-white shadow-xl p-5 relative hover:scale-102 transition-transform hover:-translate-x-2.25 hover:-translate-y-2.25">
+interface PlaylistCardProps {
+  playlist: Playlist;
+  className?: string;
+}
 
+const PlaylistCard: React.FC<PlaylistCardProps> = ({
+  playlist,
+  className = "",
+}) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const savedPlaylists = useSelector(
+    (state: RootState) => state.playlist.saved
+  );
+
+  const isSaved = savedPlaylists.some(p => p.id === playlist.id);
+
+  const {
+    id,
+    title,
+    subtitle,
+    image,
+    likes,
+    songs,
+    featured = false,
+  } = playlist;
+
+  const handlePlay = () => {
+    navigate(`/playlist/${id}`);
+  };
+
+  const handleSave = () => {
+    dispatch(toggleSave(playlist));
+  };
+
+  return (
+    <div
+      className={`
+        w-full rounded-2xl bg-gradient-to-br
+        from-[#fbf7fc] to-white shadow-md p-4 relative
+        transition-all duration-300 hover:-translate-y-2 hover:shadow-xl
+        ${className}
+      `}
+    >
 
       <div
-        className="relative h-60 w-full rounded-2xl bg-cover bg-center"
+        className="relative h-44 w-full rounded-xl bg-cover bg-center"
         style={{ backgroundImage: `url(${image})` }}
       >
         {featured && (
-          <span className="absolute top-4 left-4 text-xs px-4 py-1 rounded-full bg-white/40 backdrop-blur-md text-white tracking-widest">
+          <span className="absolute top-3 left-3 text-[10px] px-3 py-1 rounded-full bg-white/40 backdrop-blur-md text-white tracking-widest">
             FEATURED
           </span>
         )}
+
+
+        <button
+          onClick={handleSave}
+          className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow hover:scale-110 transition"
+        >
+          <Heart
+            size={14}
+            className={isSaved ? "text-red-500 fill-red-500" : "text-gray-500"}
+          />
+        </button>
       </div>
 
 
-      <div className="mt-6 cursor-default">
-        <h3 className="text-2xl font-bold text-[#2e2844]">
+      <div className="mt-4">
+        <h3 className="text-lg font-bold text-[#2e2844] truncate">
           {title}
         </h3>
-
-        <p className="text-neutral-500 mt-1">
+        <p className="text-neutral-500 text-sm mt-1 truncate">
           {subtitle}
         </p>
       </div>
 
+      <div className="border-t border-neutral-200 my-3"></div>
 
-      <div className="border-t border-neutral-200 my-4"></div>
-
-
-      <div className="flex items-center justify-between text-neutral-500 text-sm">
+      <div className="flex items-center justify-between text-neutral-500 text-xs relative">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Heart size={16} />
-            <span>{likes}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Clock size={16} />
-            <span>{songs} Songs</span>
-          </div>
+          {likes && (
+            <div className="flex items-center gap-1">
+              <Heart size={14} />
+              <span>{likes}</span>
+            </div>
+          )}
+          {songs && (
+            <div className="flex items-center gap-1">
+              <Clock size={14} />
+              <span>{songs} Songs</span>
+            </div>
+          )}
         </div>
 
-
-        <button className="absolute cursor-pointer right-6 bottom-20 h-14 w-14 rounded-full bg-primaryText flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-          <Play size={20} color="white" fill="white"  />
+        <button
+          onClick={handlePlay}
+          className="absolute right-1 -top-16 h-10 w-10 rounded-full bg-primaryText flex items-center justify-center shadow-md hover:scale-105 transition-transform"
+        >
+          <Play size={16} color="white" fill="white" />
         </button>
       </div>
     </div>

@@ -3,9 +3,12 @@ import React from "react";
 import PlaylistHero from "@/components/PlaylistPage/PlaylistHero/Playlistcover";
 import TrackList from "@/components/PlaylistPage/TrackList/TrackList";
 import SidebarPanel from "@/components/PlaylistPage/SidebarPanel/SidebarPanel";
+
 // import CommentSection from "@/components/PlaylistPage/CommentSection/CommentSection";
 
 const PlaylistPage: React.FC = () => {
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-br
       from-[#efe9ff]
@@ -15,7 +18,7 @@ const PlaylistPage: React.FC = () => {
 
 
         <div className="flex-1 flex flex-col gap-8">
-          <PlaylistHero />
+          <PlaylistHero  />
           <TrackList />
           {/* <CommunitySection /> */}
         </div>

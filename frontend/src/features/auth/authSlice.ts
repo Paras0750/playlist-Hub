@@ -1,16 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loginUser, logoutUser } from "./authThunks";
+import {type AuthState} from "./auth.types";
 
-interface AuthState {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: "user" | "admin";
-  } | null;
-  token: string | null;
-  loading: boolean;
-}
 
 const initialState: AuthState = {
   user: JSON.parse(localStorage.getItem("user") || "null"),
@@ -22,6 +13,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
   reducers: {
+
   },
   extraReducers: (builder) => {
     builder
