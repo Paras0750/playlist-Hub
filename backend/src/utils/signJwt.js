@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-
 if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
   throw new Error("JWT secrets are not defined in environment variables");
 }

@@ -16,7 +16,10 @@ const playlistSchema = mongoose.Schema({
       type: String, 
       default: "",
     },
-
+    tags : {
+        types : [String],
+        default : []
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
