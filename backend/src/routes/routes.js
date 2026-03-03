@@ -1,7 +1,16 @@
 import express from "express";
-import { getPlaylist } from "../controllers/getPlaylist.js";
-let routes = express.Router();
 
-routes.get('/featured-playlist', getPlaylist);
+import authRoutes from "./auth.routes.js";
+import playlistRoutes from "./playlist.routes.js";
+import userRoutes from "./user.routes.js";
 
-export default routes;
+
+const router = express.Router();
+
+
+router.use("/auth", authRoutes);
+router.use("/playlists", playlistRoutes);
+router.use("/users", userRoutes);
+
+
+export default router;
