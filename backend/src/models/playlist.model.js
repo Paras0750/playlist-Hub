@@ -17,7 +17,7 @@ const playlistSchema = mongoose.Schema({
       default: "",
     },
     tags : {
-        types : [String],
+        type : [String],
         default : []
     },
     owner: {

@@ -1,3 +1,9 @@
+ import {Playlist} from "../../models/playlist.model.js";
+ import ApiError from "../../utils/ApiError.js";
+ import ApiResponse from "../../utils/ApiResonse.js";
+ 
+ 
+ 
  const extractSpotifyId = (urlOrId) => {
 
   if (urlOrId.includes("spotify.com")) {
@@ -6,7 +12,7 @@
   return urlOrId;
 };
 export const createPlaylist = async (req, res) => {
-  const { name, description, songs = [] } = req.body;
+  const { name, description, songs = [] ,isPublic ,coverImage,totalLikes=0,tags,likes=[]} = req.body;
 
   if (!name) {
     throw new ApiError(400, "Playlist name is required");
@@ -21,6 +27,12 @@ export const createPlaylist = async (req, res) => {
     description,
     owner: req.user._id,
     songs: cleanedSongs,
+    isPublic,
+    coverImage,
+    totalLikes,
+    owner: req.user._id,
+    tags,
+    likes
   });
 
   return res.status(201).json(
