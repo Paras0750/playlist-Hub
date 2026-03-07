@@ -5,9 +5,13 @@ export const loginUser = createAsyncThunk("auth/login",async(credentials : {emai
     const response = await api.post("/auth/login",credentials);
     return response.data;
 })
-export const registerUser = createAsyncThunk("auth/register",async(userData : {name:string,email:string,password:string})=>{
+export const registerUser = createAsyncThunk("auth/register",async(userData : {username:string,email:string,password:string})=>{
+   try {
     const response = await api.post("/auth/register",userData);
     return response.data;
+   } catch (error : any) {
+    return Promise.reject(error.response.data);
+   }
 })  
 export const logoutUser = createAsyncThunk("auth/logout",async()=>{
     const response = await api.post("/auth/logout");

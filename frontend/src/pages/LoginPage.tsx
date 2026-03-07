@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
   const [attempts, setAttempts] = useState(0);
   const [lockUntil, setLockUntil] = useState<number | null>(null);
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
 
     setPasswordError(null);
@@ -50,17 +50,21 @@ const LoginPage: React.FC = () => {
 
       dispatch(
         setUser({
-          id: response.user.id,
-          name: response.user.username,
+          id: response.payload.user.id,
+          name: response.payload.user.username,
         }),
       );
-
       dispatch(setLoading(false));
-
       navigate("/");
     } catch (error: any) {
-      dispatch(setLoading(false));
 
+      dispatch(setLoading(false));
+      dispatch(
+        setUser({
+          id: "",
+          name: "",
+        }),
+      );
       setAttempts((prev) => prev + 1);
 
       if (attempts + 1 >= MAX_ATTEMPTS) {

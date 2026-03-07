@@ -1,37 +1,120 @@
+
 import React, { useState } from "react";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "@/features/auth/authThunks";
+import { setUser } from "@/features/auth/authSlice";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 const SignupPage: React.FC = () => {
-    
-    
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    function toggleVisibility() {
-        setIsPasswordVisible((prev) => !prev);
-    }
-    const [password, setPassword] = useState("");
-    const Icon = isPasswordVisible ? EyeOff : Eye;
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const [form, setForm] = useState({
+    username: "",
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] = useState<string | null>(null);
+
+  function toggleVisibility() {
+    setIsPasswordVisible((prev) => !prev);
+  }
+
+  const Icon = isPasswordVisible ? EyeOff : Eye;
 
   const getStrength = () => {
-  let score = 0;
+    let score = 0;
+
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+
+    if (/[a-z]/.test(password)) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+    if (score <= 2) return "Weak";
+    if (score <= 4) return "Fair";
+    if (score <= 5) return "Strong";
+    return "Very Strong";
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const { name, value } = e.target;
+
+    if (name === "password") {
+      setPassword(value);
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+
+    setError(null);
+  };
+
+  const handleSignup = async () => {
+  try {
+    setError(null);
+
+    const email = form.email.trim();
+    const username = form.username.trim();
+    const password = form.password;
 
 
-  if (password.length >= 8) score += 1;
-  if (password.length >= 12) score += 1;
+    if (!username || !email || !password) {
+      setError("All fields are required");
+      return;
+    }
 
 
-  if (/[a-z]/.test(password)) score += 1;      
-  if (/[A-Z]/.test(password)) score += 1;      
-  if (/[0-9]/.test(password)) score += 1;     
-  if (/[^A-Za-z0-9]/.test(password)) score += 1; 
+    const emailRegex = /\S+@\S+\.\S+/;
 
-  if (score <= 2) return "Weak";
-  if (score <= 4) return "Fair";
-  if (score <= 5) return "Strong";
-  return "Very Strong";
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
+    const response = await dispatch(
+      registerUser({
+        username,
+        email,
+        password
+      })
+    ).unwrap();
+    if(response.statusCode !== 201) {
+      setError(response.payload.message || "Signup failed. Please try again.");
+      return;
+    }
+    dispatch(
+      setUser({
+        id: response.data.id,
+        name: response.data.username
+      })
+    );
+
+    navigate("/");
+
+  } catch (err: any) {
+    setError(
+       "Signup failed. Please try again."
+    );
+  }
 };
-
-
   return (
     <div className="
       min-h-screen
@@ -41,7 +124,6 @@ const SignupPage: React.FC = () => {
       to-[#e8f6ff]
       flex flex-col
     ">
-
 
       <header className="flex justify-between items-center px-10 py-4 mb-4 bg-white/60 shadow-md ">
         <h1 className="text-3xl font-bold font-headingText  text-primaryText">
@@ -65,9 +147,7 @@ const SignupPage: React.FC = () => {
         </div>
       </header>
 
-
       <div className="flex flex-1 items-center justify-center relative px-6">
-
 
         <div className="
           w-full max-w-md
@@ -88,9 +168,12 @@ const SignupPage: React.FC = () => {
           </p>
 
           <div className="flex flex-col gap-5">
+
             <div className="relative">
               <User size={18} className="absolute left-4 top-3 text-secondaryText" />
               <input
+                name="username"
+                onChange={handleChange}
                 placeholder="music_enthusiast"
                 className="
                   w-full pl-12 pr-4 py-3
@@ -106,6 +189,8 @@ const SignupPage: React.FC = () => {
             <div className="relative">
               <Mail size={18} className="absolute left-4 top-3 text-secondaryText" />
               <input
+                name="email"
+                onChange={handleChange}
                 placeholder="hello@example.com"
                 className="
                   w-full pl-12 pr-4 py-3
@@ -118,14 +203,14 @@ const SignupPage: React.FC = () => {
               />
             </div>
 
-
             <div className="relative">
               <Lock size={18} className="absolute left-4 top-3 text-secondaryText" />
               <input
+                name="password"
                 type={isPasswordVisible ? "text" : "password"}
                 placeholder="Min. 8 characters"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleChange}
                 className="
                   w-full pl-12 pr-10 py-3
                   rounded-xl
@@ -135,15 +220,13 @@ const SignupPage: React.FC = () => {
                   text-sm
                 "
               />
-              {
-                <Icon
-  size={18}
-  onClick={toggleVisibility}
-  className="absolute right-4 top-3 text-secondaryText cursor-pointer transition-opacity hover:opacity-70"
-/>
-              }
-            </div>
 
+              <Icon
+                size={18}
+                onClick={toggleVisibility}
+                className="absolute right-4 top-3 text-secondaryText cursor-pointer transition-opacity hover:opacity-70"
+              />
+            </div>
 
             <div className="mt-2">
               <div className="h-1 rounded-full bg-neutral-200 overflow-hidden">
@@ -154,7 +237,7 @@ const SignupPage: React.FC = () => {
                     to-purple-700
                     transition-all duration-300
                   "
-                  style={{ width: `${Math.min(password.length * 10, 100)}%` }}
+                  style={{ width: `${Math.min((password.length * 12.5), 100)}%` }}
                 />
               </div>
 
@@ -168,29 +251,33 @@ const SignupPage: React.FC = () => {
               </div>
             </div>
 
+            {error && (
+              <p className="text-red-500 text-sm">{error}</p>
+            )}
 
             <button
-  className="
-    mt-6 py-3 rounded-full
-    bg-gradient-to-r
-    from-accentText
-    to-purple-700
-    text-white font-medium
-    shadow-lg
-    transition-all duration-300
+              onClick={handleSignup}
+              className="
+                mt-6 py-3 rounded-full
+                bg-gradient-to-r
+                from-accentText
+                to-purple-700
+                text-white font-medium
+                shadow-lg
+                transition-all duration-300
+                hover:scale-105
+                disabled:from-secondaryText
+                disabled:to-secondaryText
+                disabled:text-white/80
+                disabled:cursor-not-allowed
+                disabled:hover:scale-100
+              "
+              disabled={password.length < 8}
+            >
+              Create Account
+            </button>
 
-    hover:scale-105
 
-    disabled:from-secondaryText
-disabled:to-secondaryText
-    disabled:text-white/80
-    disabled:cursor-not-allowed
-    disabled:hover:scale-100
-  "
-  disabled={password.length < 8}
->
-  Create Account
-</button>
 
 
 
@@ -313,4 +400,4 @@ disabled:to-secondaryText
   );
 };
 
-export default SignupPage;
+export default SignupPage; 
