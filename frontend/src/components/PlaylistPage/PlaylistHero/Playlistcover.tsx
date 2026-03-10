@@ -1,13 +1,13 @@
 import React from "react";
 import PlaylistActions from "./PlaylistActions";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import { useParams } from "react-router-dom";
 import NotFound from "@/pages/NotFound";
+import type { SpotifyPlaylist } from "../playlist.types";
 
-const PlaylistHero: React.FC = () => {
+const PlaylistHero: React.FC<{ playlist: SpotifyPlaylist | null }> = ({ playlist }) => {
 
-  const playlistId = useParams().id;
-  const playlist = useAppSelector(state=>state.playlist.allPlaylist.find(p=>p.id === Number(playlistId)))
+
+
+  console.log("play",playlist)
   if(!playlist) return <NotFound></NotFound>;
 
   return (
@@ -18,19 +18,19 @@ const PlaylistHero: React.FC = () => {
 
 
       <div className="flex flex-col gap-4 flex-1">
-        <span className="text-xs rounded-full w-fit">
-          SPOTIFY // PLAYLIST
+        <span className="text-xs rounded-full w-fit text-green-600">
+          SPOTIFY 
         </span>
 
         <h1 className="text-4xl font-bold font-headingText text-primaryText">
-          {playlist.title}
+          {playlist.name}
         </h1>
 
         <p className="text-secondaryText font-light text-sm font-smtext tracking-wider">
-          {playlist.subtitle}
+          {playlist.description}
         </p>
 
-        <PlaylistActions />
+        <PlaylistActions url = {playlist.url}/>
 
         <div className="flex gap-3 mt-4">
           {["#Lofi", "#Focus", "#Instrumental", "#Chill"].map(tag => (

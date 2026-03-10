@@ -3,12 +3,12 @@ import { Play, Heart, Download } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import { useDispatch } from "react-redux";
-import { toggleSave } from "@/features/playlist/playlistSlice";
+// import { toggleSave } from "@/features/playlist/playlistSlice";
 
 
 
 // iski saved list chalani h jo playlist slice me h, aur usme se check karna h ki kya current playlist saved h ya nahi, uske hisab se heart icon fill karna h ya nahi, aur toggleSave action dispatch karna h jab user save button pe click kare.
-const PlaylistActions: React.FC = () => {
+const PlaylistActions: React.FC<{ url: string }> = ({ url}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -30,16 +30,16 @@ const PlaylistActions: React.FC = () => {
   const handleSave = () => {
     console.log('allPlaylist:', allPlaylist);
     if (!playlist) return;
-    dispatch(toggleSave(playlist));
+    // dispatch(toggleSave(playlist));
     console.log('playlist toggled:', playlist)
     
 
   };
 
   const handlePlay = () => {
-    console.log("Playing playlist:", playlistId);
-    // future: dispatch(playPlaylist(playlistId))
-  };
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
 
   const handleDownload = () => {
     console.log("Downloading playlist:", playlistId);

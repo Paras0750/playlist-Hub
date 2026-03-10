@@ -7,7 +7,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 const MAX_ATTEMPTS = 5;
-const LOCK_TIME = 60000; // 1 minute
+const LOCK_TIME = 60000; 
 
 const LoginPage: React.FC = () => {
   const loading = useAppSelector((state: any) => state.auth.loading);

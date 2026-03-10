@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Grid2X2, List } from "lucide-react";
 import PlaylistCard from "@/components/PlaylistCard/PlaylistCard";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { addPlaylist } from "@/features/playlist/playlistSlice";
+// import { addPlaylist } from "@/features/playlist/playlistSlice";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 type SortType = "recent" | "alphabetical";
@@ -41,7 +41,7 @@ const MyPlaylistsPage: React.FC = () => {
     };
 
 
-    dispatch(addPlaylist(newPlaylist));
+    // dispatch(addPlaylist(newPlaylist));
 
   };
   useEffect(() => {

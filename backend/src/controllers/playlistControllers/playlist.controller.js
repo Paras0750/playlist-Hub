@@ -1,91 +1,121 @@
- import {Playlist} from "../../models/playlist.model.js";
- import ApiError from "../../utils/ApiError.js";
- import ApiResponse from "../../utils/ApiResonse.js";
- 
- 
- 
- const extractSpotifyId = (urlOrId) => {
+import { Playlist } from "../../models/playlist.model.js";
+import ApiError from "../../utils/ApiError.js";
 
+const extractSpotifyId = (urlOrId) => {
   if (urlOrId.includes("spotify.com")) {
     return urlOrId.split("/track/")[1]?.split("?")[0];
   }
   return urlOrId;
 };
+
 export const createPlaylist = async (req, res) => {
-  const { name, description, songs = [] ,isPublic ,coverImage,totalLikes=0,tags,likes=[]} = req.body;
+try {
+    const {
+      name,
+      description,
+      songs = [],
+      isPublic = false,
+      coverImage,
+      totalLikes = 0,
+      tags = [],
+      likes = [],
+    } = req.body;
+  
+    if (!name) {
+      throw new ApiError(400, "Playlist name is required");
+    }
+  
+    const cleanedSongs = songs.map((song) => ({
+      spotifyId: extractSpotifyId(song),
+    }));
+  
+    const playlist = await Playlist.create({
+      name,
+      description,
+      owner: req.user._id,
+      songs: cleanedSongs,
+      isPublic,
+      coverImage,
+      totalLikes,
+      tags,
+      likes,
+    });
+  
+    res.status(201).json(playlist);
+} catch (error) {
+  console.log("error : ",error)
+  res.status(400).json({ error: error.message });
+}
+};
 
-  if (!name) {
-    throw new ApiError(400, "Playlist name is required");
-  }
 
-  const cleanedSongs = songs.map((song) => ({
-    spotifyId: extractSpotifyId(song),
-  }));
+export const getAllPlaylists = async (req, res) => {
+  const playlists = await Playlist.find({ isPublic: true }).populate(
+    "owner",
+    "username email",
+  );
 
-  const playlist = await Playlist.create({
-    name,
-    description,
+  res.json(playlists);
+};
+
+// FETCH PUBLIC PLAYLISTS
+export const getPublicPlaylists = async (req, res) => {
+  const playlists = await Playlist.find({ isPublic: true }).populate(
+    "owner",
+    "username",
+  );
+
+  res.json(playlists);
+};
+
+
+
+export const getMyPlaylists = async (req, res) => {
+  const playlists = await Playlist.find({
     owner: req.user._id,
-    songs: cleanedSongs,
-    isPublic,
-    coverImage,
-    totalLikes,
-    owner: req.user._id,
-    tags,
-    likes
   });
 
-  return res.status(201).json(
-    new ApiResponse(201, "Playlist created successfully", playlist)
-  );
+  res.json(playlists);
 };
-export const getAllPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({ isPublic: true })
-    .populate("owner", "username email");
 
-  return res.status(200).json(
-    new ApiResponse(200, "Playlists fetched", playlists)
-  );
+
+
+
+
+export const getSavedPlaylists = async (req, res) => {
+  const playlists = await Playlist.find({
+    likes: req.user._id,
+  });
+
+  res.json(playlists);
 };
-export const likePlaylist = async (req, res) => {
+
+
+export const toggleSavePlaylist = async (req, res) => {
   const playlist = await Playlist.findById(req.params.id);
 
   if (!playlist) {
     throw new ApiError(404, "Playlist not found");
   }
 
-  if (playlist.likes.includes(req.user._id)) {
-    throw new ApiError(400, "Already liked");
+  const userId = req.user._id.toString();
+
+  const alreadySaved = playlist.likes.some((id) => id.toString() === userId);
+
+  if (alreadySaved) {
+    playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
+  } else {
+    playlist.likes.push(req.user._id);
   }
-
-  playlist.likes.push(req.user._id);
-  playlist.totalLikes = playlist.likes.length;
-
-  await playlist.save();
-
-  return res.status(200).json(
-    new ApiResponse(200, "Playlist liked", { totalLikes: playlist.totalLikes })
-  );
-};
-export const unlikePlaylist = async (req, res) => {
-  const playlist = await Playlist.findById(req.params.id);
-
-  if (!playlist) {
-    throw new ApiError(404, "Playlist not found");
-  }
-
-  playlist.likes = playlist.likes.filter(
-    (id) => id.toString() !== req.user._id.toString()
-  );
 
   playlist.totalLikes = playlist.likes.length;
 
   await playlist.save();
 
-  return res.status(200).json(
-    new ApiResponse(200, "Playlist unliked")
-  );
+  res.json(playlist);
 };
+
+// DELETE PLAYLIST
 export const deletePlaylist = async (req, res) => {
   const playlist = await Playlist.findById(req.params.id);
 
@@ -99,16 +129,7 @@ export const deletePlaylist = async (req, res) => {
 
   await playlist.deleteOne();
 
-  return res.status(200).json(
-    new ApiResponse(200, "Playlist deleted successfully")
-  );
-};
-export const getMyPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({
-    owner: req.user._id,
+  res.json({
+    message: "Playlist deleted successfully",
   });
-
-  return res.status(200).json(
-    new ApiResponse(200, "Your playlists fetched", playlists)
-  );
 };

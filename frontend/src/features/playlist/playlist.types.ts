@@ -1,15 +1,11 @@
 export interface Playlist {
-  id: number;
   title: string;
-  subtitle: string;
-  image: string;
-    likes?: string;     
-    songs?: number;
-    featured?: boolean;
+  description: string;
+  image: string|null;
+  likes?: string[];     
+  songs?: string[];
+  tags ?: string[];
+  featured?: boolean;
+  visibility : string;
 }
 
-export interface PlaylistState {
-  saved: Playlist[];
-  allPlaylist: Playlist[];
-  myPlaylist: Playlist[];
-}

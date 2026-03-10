@@ -13,19 +13,24 @@ const PlaylistEditor: React.FC = () => {
     <div className="w-225 rounded-3xl border  p-10 shadow-2xl backdrop-blur-2xl">
       <div className="flex gap-10">
         <CoverUpload />
-        <PlaylistMeta title={""}
-  description={""}
+        <PlaylistMeta 
  />
       </div>
 
       <TagSection
-  moods={["Chill", "Focus", "Melancholy", "Relaxing"]}
-  genres={["Lo-Fi", "Hip Hop", "Jazz"]}
-  selectedMoods={[]}
-  selectedGenres={[]}
-  onChange={()=>{}}
+  
+  genres={["Pop","Hip Hop",
+"Rock",
+"Jazz",
+"EDM",
+"Classical",
+"Indie",
+"Lo-fi",
+"R&B",
+"Punjabi"]}
+  
 />
-      <ActivitySection />
+      {/* <ActivitySection /> includethis in future */}
       <PublishSection />
     </div>
   );

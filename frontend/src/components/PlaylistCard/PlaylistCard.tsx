@@ -1,7 +1,7 @@
 import { Play, Heart, Clock } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toggleSave } from "@/features/playlist/playlistSlice";
+// import { toggleSave } from "@/features/playlist/playlistSlice";
 import type { RootState } from "@/app/store";
 
 interface Playlist {
@@ -25,7 +25,6 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const savedPlaylists = useSelector(
     (state: RootState) => state.playlist.saved
   );
@@ -39,7 +38,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
     image,
     likes,
     songs,
-    featured = false,
+    featured ,
   } = playlist;
 
   const handlePlay = () => {
@@ -47,21 +46,21 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
   };
 
   const handleSave = () => {
-    dispatch(toggleSave(playlist));
+    // dispatch(toggleSave(playlist));
   };
 
   return (
     <div
       className={`
         w-full rounded-2xl bg-gradient-to-br
-        from-[#fbf7fc] to-white shadow-md p-4 relative
-        transition-all duration-300 hover:-translate-y-2 hover:shadow-xl
+        from-[#fbf7fc] to-white shadow-md px-4 py-3 relative
+        transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
         ${className}
       `}
     >
 
       <div
-        className="relative h-44 w-full rounded-xl bg-cover bg-center"
+        className="relative h-44 w-full rounded-xl bg-size-[100%_100%] bg-repeat-y bg-center"
         style={{ backgroundImage: `url(${image})` }}
       >
         {featured && (
@@ -94,7 +93,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 
       <div className="border-t border-neutral-200 my-3"></div>
 
-      <div className="flex items-center justify-between text-neutral-500 text-xs relative">
+      <div className="flex items-center justify-between text-neutral-500 text-xs relative  ">
         <div className="flex items-center gap-4">
           {likes && (
             <div className="flex items-center gap-1">
@@ -112,7 +111,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 
         <button
           onClick={handlePlay}
-          className="absolute right-1 -top-16 h-10 w-10 rounded-full bg-primaryText flex items-center justify-center shadow-md hover:scale-105 transition-transform"
+          className=" h-10 w-10 rounded-full bg-primaryText flex items-center justify-center shadow-md hover:scale-105 transition-transform"
         >
           <Play size={16} color="white" fill="white" />
         </button>

@@ -42,7 +42,7 @@ const Router = () => {
         } />
       </Route>
       <Route path="/create" element={
-        <CreatePlaylist /> }
+        <ProtectedRoute><CreatePlaylist /></ProtectedRoute> }
         />
       <Route element={<AuthLayout />}>
         <Route

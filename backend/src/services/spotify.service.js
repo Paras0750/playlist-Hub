@@ -35,7 +35,7 @@ export const getSpotifyToken = async () => {
         },
       }
     );
-
+    console.log('Spotify Token Response : ', response.data);
     spotifyToken = response.data.access_token;
     tokenExpiry = Date.now() + (response.data.expires_in - 60) * 1000;
 

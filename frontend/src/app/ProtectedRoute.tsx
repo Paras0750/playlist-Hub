@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import type { JSX } from "react/jsx-dev-runtime";
 
  const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const isAuthenticated = useAppSelector(state=>state.auth.token)
+  const isAuthenticated = useAppSelector(state=>state.auth.user.isAuthenticated);
 
   if(!isAuthenticated){
     return <Navigate to="/login" replace />;
