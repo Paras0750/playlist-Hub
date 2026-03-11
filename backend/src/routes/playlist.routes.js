@@ -7,13 +7,15 @@ import {
 
 import  verifyJWT  from "../middlewares/authMiddleware.js";
 import { getPlaylist,getSinglePlaylist ,getPlaylistTracks} from "../controllers/playlistControllers/getPlaylist.controller.js";
+import upload from "../middlewares/multer.middleware.js";
 
 const router = express.Router();
 // router.get("/fetchPublic", getPlaylist);
 // router.get("/:id", getSinglePlaylist);
 // router.get('/:id/tracks',getPlaylistTracks);
 // router.get("/me", verifyJWT, getMyPlaylists);
-router.post("/", verifyJWT, createPlaylist);
+router.post("/", verifyJWT,upload.single("image") ,createPlaylist);
+
 
 // if i want to allow directly update playlist  then i can use patch method, but for now we will keep it simple and not allow update playlist
 // router.patch("/:id", verifyJWT, updatePlaylist);

@@ -1,3 +1,5 @@
+import cloudinary from "../../services/cloudinary.service.js";
+import fs from "fs/promises";
 import { Playlist } from "../../models/playlist.model.js";
 import ApiError from "../../utils/ApiError.js";
 
@@ -9,66 +11,94 @@ const extractSpotifyId = (urlOrId) => {
 };
 
 export const createPlaylist = async (req, res) => {
-try {
-    const {
-      name,
+  try {
+    console.log("body:", req.body);
+    console.log("file:", req.file);
+    
+    let {
+      title,
       description,
       songs = [],
       isPublic = false,
-      coverImage,
-      totalLikes = 0,
       tags = [],
-      likes = [],
     } = req.body;
-  
-    if (!name) {
-      throw new ApiError(400, "Playlist name is required");
+
+    if (!title) {
+      throw new ApiError(400, "Playlist title is required");
     }
-  
-    const cleanedSongs = songs.map((song) => ({
-      spotifyId: extractSpotifyId(song),
-    }));
-  
+
+    //multipart convert to string
+    if (typeof songs === "string") {
+      songs = JSON.parse(songs);
+    }
+
+    if (typeof tags === "string") {
+      tags = JSON.parse(tags);
+    }
+    if (typeof isPublic === "string") {
+      isPublic = isPublic === "true";
+    }
+
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "playlist_covers",
+        transformation: [{ width: 300, height: 300, crop: "fill" }],
+      });
+      imageUrl = result.secure_url;
+    }
+
     const playlist = await Playlist.create({
-      name,
+      name: title,
       description,
-      owner: req.user._id,
-      songs: cleanedSongs,
+      owner: req.user.id,
+      songs,
       isPublic,
-      coverImage,
-      totalLikes,
+      coverImage: imageUrl,
       tags,
-      likes,
+      totalLikes: 0,
+      likes: [],
     });
-  
+
     res.status(201).json(playlist);
-} catch (error) {
-  console.log("error : ",error)
-  res.status(400).json({ error: error.message });
-}
+  } catch (error) {
+    console.log("error:", error);
+
+    res.status(400).json({
+      message: "Successfully Created Playlist",
+      error: error.message,
+    });
+  }
+  finally {
+    if (req.file.path) {
+      try {
+        await fs.unlink(req.file.path);
+      } catch (err) {
+        console.log("File deletion error:", err.message);
+      }
+    }
+
+  }
 };
 
 
 export const getAllPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({ isPublic: true }).populate(
+  const playlists = await Playlist.find().populate(
     "owner",
     "username email",
   );
-
   res.json(playlists);
 };
 
-// FETCH PUBLIC PLAYLISTS
+
 export const getPublicPlaylists = async (req, res) => {
   const playlists = await Playlist.find({ isPublic: true }).populate(
     "owner",
     "username",
   );
-
   res.json(playlists);
 };
-
-
 
 export const getMyPlaylists = async (req, res) => {
   const playlists = await Playlist.find({
@@ -78,10 +108,6 @@ export const getMyPlaylists = async (req, res) => {
   res.json(playlists);
 };
 
-
-
-
-
 export const getSavedPlaylists = async (req, res) => {
   const playlists = await Playlist.find({
     likes: req.user._id,
@@ -89,7 +115,6 @@ export const getSavedPlaylists = async (req, res) => {
 
   res.json(playlists);
 };
-
 
 export const toggleSavePlaylist = async (req, res) => {
   const playlist = await Playlist.findById(req.params.id);
@@ -115,7 +140,7 @@ export const toggleSavePlaylist = async (req, res) => {
   res.json(playlist);
 };
 
-// DELETE PLAYLIST
+
 export const deletePlaylist = async (req, res) => {
   const playlist = await Playlist.findById(req.params.id);
 

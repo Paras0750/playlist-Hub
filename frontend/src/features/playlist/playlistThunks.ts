@@ -83,19 +83,44 @@ export const toggleLike = createAsyncThunk<Playlist,void>
      api.post(`/playlists/${userId}/toggleLike`)
 })
 
-export const createPlaylist = createAsyncThunk<Playlist, Partial<Playlist>>(
+export const createPlaylist = createAsyncThunk(
   "playlist/create",
-  async (playlistData, { rejectWithValue }) => {
+  async (playlist : Playlist, { rejectWithValue }) => {
     try {
-      const res = await api.post("/playlists/create", playlistData);
 
-      return res.data as Playlist;
+      const formData = new FormData();
+      formData.append("title", playlist.title);
+      formData.append("description", playlist.description);
+      formData.append("isPublic", playlist.visibility === "public" ? "true" : "false");
+
+      if (playlist.tags) {
+        formData.append("tags", JSON.stringify(playlist.tags));
+      }
+
+      if (playlist.songs) {
+        formData.append("songs", JSON.stringify(playlist.songs));
+      }
+
+      if (playlist.imageFile) {
+        formData.append("image", playlist.imageFile);
+      }
+
+      const res = await api.post("/playlists", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+     
+      return res.data;
+
     } catch (error: any) {
+
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create playlist",
+        error.response?.data?.message || "Failed to create playlist"
       );
+
     }
-  },
+  }
 );
 
 export const deletePlaylist = createAsyncThunk<string, string>(

@@ -24,7 +24,7 @@ const CoverUpload: React.FC = () => {
 
       localStorage.setItem("playlist-cover", base64);
 
-      dispatch(updatePlaylist({ image: base64 }));
+      dispatch(updatePlaylist({ image: base64 ,imageFile: file }));
     };
 
     reader.readAsDataURL(file);
@@ -38,7 +38,7 @@ const CoverUpload: React.FC = () => {
     e.stopPropagation();
     setImage(null);
     localStorage.removeItem("playlist-cover");
-    dispatch(updatePlaylist({ image: null }));
+    dispatch(updatePlaylist({ image: null, imageFile: null }));
 // Clear the file input value to allow re-uploading the same file if req
     if (fileInputRef.current) {
       fileInputRef.current.value = "";

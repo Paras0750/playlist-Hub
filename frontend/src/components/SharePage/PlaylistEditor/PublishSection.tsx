@@ -14,7 +14,7 @@ const PublishSection: React.FC = () => {
 
   const handlePublish = () => {
     console.log(playlist)
-    // dispatch(createPlaylist(playlist));
+    dispatch(createPlaylist(playlist));
   };
 
   return (
