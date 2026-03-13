@@ -46,13 +46,15 @@ const LoginPage: React.FC = () => {
     try {
       dispatch(setLoading(true));
 
-      const response = await dispatch(loginUser(form));
+      const response = await dispatch(loginUser(form)).unwrap();
 
       dispatch(
         setUser({
-          id: response.payload.user.id,
-          name: response.payload.user.username,
-          isAuthenticated: true
+          id: response.user.id,
+          name: response.user.username,
+          image: response.user.image ?? "",
+          isAuthenticated: true,
+          savedPlaylists: response.user.savedPlaylists ?? [],
         }),
       );
       dispatch(setLoading(false));
@@ -64,7 +66,9 @@ const LoginPage: React.FC = () => {
         setUser({
           id: "",
           name: "",
+          image: "",
           isAuthenticated: false,
+          savedPlaylists: [],
         }),
       );
       setAttempts((prev) => prev + 1);
@@ -75,9 +79,13 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      if (error?.message?.toLowerCase().includes("email")) {
+      const errorMessage = String(error || "").toLowerCase();
+
+      if (errorMessage.includes("email")) {
         setEmailError("Email not found");
-      } else if (error?.message?.toLowerCase().includes("password")) {
+      } else if (
+        errorMessage.includes("password") || errorMessage.includes("credential")
+      ) {
         setPasswordError("Incorrect password");
       } else {
         setPasswordError("Login failed");

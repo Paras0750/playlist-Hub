@@ -1,6 +1,6 @@
  import mongoose from "mongoose";
 
- const userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
     username : {
         type : String , 
         required : true,
@@ -24,12 +24,32 @@
         select : false
     },
     savedPlaylists : {
-        type : [mongoose.Schema.Types.ObjectId],
-        ref : "Playlist"
+        type : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Playlist"
+        }],
+        default : []
     },
     myPlaylist : {
-        type : [mongoose.Schema.Types.ObjectId],
-        ref : "Playlist"
+        type : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Playlist"
+        }],
+        default : []
+    },
+    followers : {
+        type : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "User"
+        }],
+        default : []
+    },
+    following : {
+        type : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "User"
+        }],
+        default : []
     },
     songs : {
         type : mongoose.Schema.Types.ObjectId,

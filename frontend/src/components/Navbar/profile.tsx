@@ -7,11 +7,11 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
-  const authState = useAppSelector((state : any) => state.auth);
+  const authState = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const logoutHandler = async ()=>{
     dispatch(logout());// local state update
-    const res = await dispatch(logoutUser());
+    await dispatch(logoutUser());
     setOpen(prev => !prev)
       navigate("/login");
   }
@@ -33,7 +33,18 @@ const Profile: React.FC = () => {
         className="flex h-10 w-10 items-center justify-center rounded-full border bg-white hover:cursor-pointer"
         onClick={handleOnClick}
       >
-        <User className="h-6 w-6 text-neutral-500" />
+        {authState.user.image ? (
+          <img
+            src={authState.user.image}
+            alt={authState.user.name || "Profile"}
+            className="h-full w-full rounded-full object-cover"
+            onError={(event) => {
+              event.currentTarget.src = "/image.svg";
+            }}
+          />
+        ) : (
+          <User className="h-6 w-6 text-neutral-500" />
+        )}
       </div>
 
 

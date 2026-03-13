@@ -1,15 +1,16 @@
+import React, { useState } from "react";
 import { Play, Heart, Clock } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { toggleSave } from "@/features/playlist/playlistSlice";
-import type { RootState } from "@/app/store";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { toggleSavePlaylist } from "@/features/playlist/playlistThunks";
 
 interface Playlist {
-  id: string;
+  id: string | number;
   title: string;
-  subtitle: string;
-  image: string;
-  likes?: string[];
+  subtitle?: string;
+  image?: string;
+  likes?: string[] | string;
   songs?: number;
   featured?: boolean;
   totalLikes ?: number;
@@ -18,17 +19,21 @@ interface Playlist {
 interface PlaylistCardProps {
   playlist: Playlist;
   className?: string;
+  onSavedChange?: (playlistId: string, saved: boolean) => void;
 }
 
 const PlaylistCard: React.FC<PlaylistCardProps> = ({
   playlist,
   className = "",
+  onSavedChange,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const savedPlaylists = null
-
-  const isSaved = null;
+  const userId = useAppSelector((state) => state.auth.user.id);
+  const savedPlaylists = useAppSelector(
+    (state) => state.auth.user.savedPlaylists,
+  );
+  const [isSaving, setIsSaving] = useState(false);
   const {
     id,
     title,
@@ -39,13 +44,37 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
     featured ,
     totalLikes
   } = playlist;
+  const playlistId = typeof id === "string" ? id : null;
+  const isSaved = playlistId ? savedPlaylists.includes(playlistId) : false;
+  const likeCount = typeof totalLikes === "number"
+    ? totalLikes
+    : Array.isArray(likes)
+      ? likes.length
+      : likes;
 
   const handlePlay = () => {
     navigate(`/playlist/${id}`);
   };
 
-  const handleSave = () => {
-    // dispatch(toggleSave(playlist));
+  const handleSave = async () => {
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
+    if (!playlistId || isSaving) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const result = await dispatch(toggleSavePlaylist(playlistId)).unwrap();
+      onSavedChange?.(result.playlistId, result.saved);
+    } catch (error) {
+      console.error("Error toggling saved playlist:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -60,7 +89,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 
       <div
         className="relative h-44 w-full rounded-xl bg-size-[100%_100%] bg-repeat-y bg-center"
-        style={{ backgroundImage: `url(${image})` }}
+        style={{ backgroundImage: `url(${image || "/Hero.png"})` }}
       >
         {featured && (
           <span className="absolute top-3 left-3 text-[10px] px-3 py-1 rounded-full bg-white/40 backdrop-blur-md text-white tracking-widest">
@@ -70,8 +99,10 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 
 
         <button
+          type="button"
           onClick={handleSave}
-          className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow hover:scale-110 transition"
+          disabled={isSaving || !playlistId}
+          className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow hover:scale-110 transition disabled:cursor-not-allowed disabled:opacity-70"
         >
           <Heart
             size={14}
@@ -86,7 +117,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
           {title}
         </h3>
         <p className="text-neutral-500 text-sm mt-1 truncate">
-          {subtitle}
+          {subtitle || ""}
         </p>
       </div>
 
@@ -97,7 +128,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
           {likes && (
             <div className="flex items-center gap-1">
               <Heart size={14} />
-              <span>{totalLikes}</span>
+              <span>{likeCount}</span>
             </div>
           )}
           {songs !== undefined && (

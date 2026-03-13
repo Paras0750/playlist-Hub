@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { User } from "../../models/user.model.js";
 import ApiResponse from "../../utils/ApiResonse.js";
-import { getAccessToken, getRefreshToken } from "../../utils/signJWT.js";
+import { getAccessToken, getRefreshToken } from "../../utils/signJwt.js";
 
 const registerController = async (req, res) => {
   const { username, email, password } = req.body;
@@ -75,7 +75,8 @@ const registerController = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        image:user.coverImage
+        image: user.image,
+        savedPlaylists: user.savedPlaylists ?? [],
       })
     );
 };

@@ -1,28 +1,56 @@
 import React from "react";
 import ProfileStats from "./ProfileStats";
 import ProfileActions from "./ProfileActions";
-import { MapPin, Link as LinkIcon } from "lucide-react";
 
 interface ProfileHeaderProps {
   avatar: string;
   name: string;
-  bio: string;
-  location: string;
-  website: string;
+  username: string;
+  summary: string;
   stats: {
     label: string;
     value: string;
   }[];
+  isOwnProfile: boolean;
+  isFollowing: boolean;
+  isFollowLoading: boolean;
+  isUploadingAvatar: boolean;
+  onFollow: () => void;
+  onShare: () => void;
+  onAvatarClick: () => void;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   avatar,
   name,
-  bio,
-  location,
-  website,
+  username,
+  summary,
   stats,
+  isOwnProfile,
+  isFollowing,
+  isFollowLoading,
+  isUploadingAvatar,
+  onFollow,
+  onShare,
+  onAvatarClick,
 }) => {
+  const avatarImage = (
+    <img
+      src={avatar || "/image.svg"}
+      alt={name}
+      onError={(event) => {
+        event.currentTarget.src = "/image.svg";
+      }}
+      className="
+        w-32 h-32
+        rounded-full
+        object-cover
+        border-4 border-white
+        shadow-md
+      "
+    />
+  );
+
   return (
     <div className="
       bg-white
@@ -33,55 +61,46 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       justify-between
       gap-8
     ">
-
-
       <div className="flex flex-col sm:flex-row gap-8 items-start sm:items-center">
-
-
-        <img
-          src={avatar}
-          alt={name}
-          className="
-            w-32 h-32
-            rounded-full
-            object-cover
-            border-4 border-white
-            shadow-md
-          "
-        />
-
-
+        {isOwnProfile ? (
+          <button
+            type="button"
+            onClick={onAvatarClick}
+            className="group relative shrink-0 cursor-pointer"
+          >
+            {avatarImage}
+            <span className="absolute inset-x-2 bottom-2 rounded-full bg-black/70 px-3 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+              {isUploadingAvatar ? "Uploading..." : "Show or change"}
+            </span>
+          </button>
+        ) : (
+          avatarImage
+        )}
         <div className="flex flex-col gap-3">
-
           <h1 className="text-4xl font-bold text-primaryText">
             {name}
           </h1>
 
-          <p className="text-neutral-500 max-w-xl leading-relaxed">
-            {bio}
+          <p className="text-sm font-medium tracking-wide text-accentText">
+            @{username}
           </p>
 
-          <div className="flex flex-wrap gap-6 text-sm text-neutral-500">
-            <div className="flex items-center gap-2">
-              <MapPin size={16} />
-              <span>{location}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <LinkIcon size={16} />
-              <span>{website}</span>
-            </div>
-          </div>
+          <p className="text-neutral-500 max-w-xl leading-relaxed">
+            {summary}
+          </p>
 
           <ProfileStats stats={stats} />
         </div>
       </div>
-
-
       <div className="self-start lg:self-center">
-        <ProfileActions />
+        <ProfileActions
+          isOwnProfile={isOwnProfile}
+          isFollowing={isFollowing}
+          isFollowLoading={isFollowLoading}
+          onFollow={onFollow}
+          onShare={onShare}
+        />
       </div>
-
     </div>
   );
 };

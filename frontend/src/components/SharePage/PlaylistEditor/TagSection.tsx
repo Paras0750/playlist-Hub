@@ -12,12 +12,12 @@ const TagSection: React.FC<TagSectionProps> = ({ genres }) => {
   const dispatch = useAppDispatch();
 
   const selectedGenres = useAppSelector(
-    (state) => state.playlist.tags
+    (state) => state.playlist.tags ?? [],
   );
   
   const toggleGenre = (genre: string) => {
     
-    const updatedGenres = selectedGenres?.includes(genre)
+    const updatedGenres = selectedGenres.includes(genre)
       ? selectedGenres.filter((g) => g !== genre)
       : [...selectedGenres, genre];
 

@@ -1,62 +1,74 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import PlaylistCard from "@/components/PlaylistCard/PlaylistCard";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "@/services/api";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import type { BackendPlaylist } from "@/features/playlist/playlist.types";
+import { subscribeToRefetchEvents } from "@/lib/refetchEvents";
 
-const dummyPlaylists = [
-  {
-    id: 1,
-    title: "Midnight Resonance",
-    subtitle: "by Digital Nomad",
-    image: "/Hero.png",
-  },
-  {
-    id: 2,
-    title: "Chill Lo-Fi Beats",
-    subtitle: "by Lofi Girl",
-    image: "/Hero.png",
-  },
-  {
-    id: 3,
-    title: "Summer Anthems",
-    subtitle: "by PlaylistHub",
-    image: "/Hero.png",
-  },
-  {
-    id: 4,
-    title: "Deep Focus Techno",
-    subtitle: "by TechNode",
-    image: "/Hero.png",
-  },
-  {
-    id: 5,
-    title: "Indigo Soul",
-    subtitle: "by Soulman",
-    image: "/Hero.png",
-  },
-];
-
-const filters = ["Recently Added", "Alphabetical", "Albums"];
+const filters = ["Recently Added", "Alphabetical"];
 
 const SavedPage: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState("Recently Added");
   const navigate = useNavigate();
+
+  const userId = useAppSelector((state) => state.auth.user.id);
+
+  const [savedPlaylists, setSavedPlaylists] = useState<BackendPlaylist[]>([]);
+  const [activeFilter, setActiveFilter] = useState("Recently Added");
+
+  const fetchSavedPlaylists = useCallback(async () => {
+    if (!userId) {
+      setSavedPlaylists([]);
+      return;
+    }
+
+    try {
+      const response = await api.get(`/users/${userId}/saved`);
+      setSavedPlaylists(response.data.savedPlaylists as BackendPlaylist[]);
+    } catch (error) {
+      console.error("Error fetching saved playlists:", error);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    void fetchSavedPlaylists();
+  }, [fetchSavedPlaylists]);
+
+  useEffect(() => {
+    return subscribeToRefetchEvents((detail) => {
+      if (detail.type === "savedPlaylists") {
+        void fetchSavedPlaylists();
+      }
+    });
+  }, [fetchSavedPlaylists]);
+
+  const sortedPlaylists = useMemo(() => {
+    if (activeFilter === "Alphabetical") {
+      return [...savedPlaylists].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return savedPlaylists;
+  }, [savedPlaylists, activeFilter]);
+
+  const handleSavedChange = (playlistId: string, saved: boolean) => {
+    void playlistId;
+    void saved;
+    void fetchSavedPlaylists();
+  };
 
   return (
     <div className="px-10 py-10 flex flex-col gap-10">
-
-
       <div className="flex items-start justify-between">
-
         <div>
           <h1 className="text-4xl font-bold text-primaryText">
             Saved Playlists
           </h1>
+
           <p className="text-secondaryText mt-2">
             Discover and listen to your curated collection.
           </p>
         </div>
-
 
         <div className="flex gap-3">
           {filters.map((filter) => (
@@ -79,16 +91,27 @@ const SavedPage: React.FC = () => {
         </div>
       </div>
 
-
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-8">
+        {sortedPlaylists.map((playlist) => (
+          <PlaylistCard
+            key={playlist._id}
+            playlist={{
+              id: playlist._id,
+              title: playlist.name,
+              subtitle: playlist.description || "Saved Playlist",
+              image: playlist.coverImage || "/Hero.png",
+              likes: playlist.likes,
+              songs: playlist.songs?.length || 0,
+              totalLikes: playlist.totalLikes || 0,
+              featured: false,
+            }}
+            onSavedChange={handleSavedChange}
+          />
+        ))}
+      </div>
 
-        {dummyPlaylists.map((playlist) => (
-  <PlaylistCard key={playlist.id} playlist={playlist} />
-))}
-
-</div>
-
-      <div className="
+      <div
+        className="
         mt-10
         border-2 border-dashed border-accentText/30
         rounded-3xl
@@ -97,8 +120,8 @@ const SavedPage: React.FC = () => {
         bg-gradient-to-br
         from-white
         to-accentText/5
-      ">
-
+      "
+      >
         <div className="h-14 w-14 rounded-full bg-gradient-to-r from-accentText to-purple-600 flex items-center justify-center shadow-lg">
           <Plus className="text-white w-6 h-6" />
         </div>
@@ -108,8 +131,8 @@ const SavedPage: React.FC = () => {
         </h2>
 
         <p className="text-secondaryText text-center max-w-md text-sm">
-          Browse through thousands of community-curated playlists
-          and add them to your library.
+          Browse through thousands of community-curated playlists and add them
+          to your library.
         </p>
 
         <button
@@ -124,9 +147,7 @@ const SavedPage: React.FC = () => {
         >
           Explore New Playlists
         </button>
-
       </div>
-
     </div>
   );
 };

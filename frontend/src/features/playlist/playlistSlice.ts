@@ -5,6 +5,7 @@ const initialState : Playlist = {
   title: "",
   description: "",
   image: "",
+  imageFile: null,
   songs: [],
   tags : [],
   featured: false,

@@ -20,6 +20,8 @@ export interface BackendPlaylist {
   owner: {
     _id: string;
     username: string;
+    email: string;
+    image : string;
   };
 
   songs: string[];

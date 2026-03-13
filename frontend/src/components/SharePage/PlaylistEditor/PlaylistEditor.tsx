@@ -2,7 +2,6 @@ import React from "react";
 import CoverUpload from "./CoverUpload";
 import PlaylistMeta from "./PlaylistMeta";
 import TagSection from "./TagSection";
-import ActivitySection from "./ActivitySection";
 import PublishSection from "./PublishSection";
 
 //handle tag change banana h 

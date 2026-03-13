@@ -1,19 +1,45 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus, Grid2X2, List } from "lucide-react";
 import PlaylistCard from "@/components/PlaylistCard/PlaylistCard";
 import { useAppSelector } from "@/hooks/useAppSelector";
-// import { addPlaylist } from "@/features/playlist/playlistSlice";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useNavigate } from "react-router";
+import api from "@/services/api";
+import type { BackendPlaylist } from "@/features/playlist/playlist.types";
+import { subscribeToRefetchEvents } from "@/lib/refetchEvents";
 
 type SortType = "recent" | "alphabetical";
 
 const MyPlaylistsPage: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const userId = useAppSelector((state) => state.auth.user?.id);
+  const [myPlaylists, setMyPlaylists] = useState<BackendPlaylist[]>([]);
 
-  const myPlaylists = useAppSelector(
-    (state) => state.playlist.myPlaylist || []
-  );
+  const fetchMyPlaylists = useCallback(async () => {
+    if (!userId) {
+      setMyPlaylists([]);
+      return;
+    }
 
+    try {
+      const response = await api.get(`/users/${userId}/myPlaylists`);
+      setMyPlaylists(response.data as BackendPlaylist[]);
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+  fetchMyPlaylists();
+  }, [fetchMyPlaylists]);
+
+  useEffect(() => {
+    return subscribeToRefetchEvents((detail) => {
+      if (detail.type === "myPlaylists") {
+        void fetchMyPlaylists();
+      }
+    });
+  }, [fetchMyPlaylists]);
+  
   const [sortType, setSortType] = useState<SortType>("recent");
   const [gridView, setGridView] = useState(true);
 
@@ -21,32 +47,17 @@ const MyPlaylistsPage: React.FC = () => {
   const sortedPlaylists = useMemo(() => {
     if (sortType === "alphabetical") {
       return [...myPlaylists].sort((a, b) =>
-        a.title.localeCompare(b.title)
+        a.name.localeCompare(b.name)
       );
     }
     return myPlaylists;
   }, [myPlaylists, sortType]);
 
 
-
   const handleCreatePlaylist = () => {
-    const newPlaylist = {
-      id: Date.now(),
-      title: "New Playlist",
-      subtitle: "by You",
-      image: "/Hero.png",
-      likes: "0",
-      songs: 0,
-      featured: false,
-    };
-
-
-    // dispatch(addPlaylist(newPlaylist));
-
+    navigate('/create')
   };
-  useEffect(() => {
-  console.log("Updated myPlaylists:", myPlaylists);
-}, [myPlaylists]);
+  
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#f7f3ff] via-white to-[#eef2ff] px-10 py-8">
 
@@ -129,8 +140,17 @@ const MyPlaylistsPage: React.FC = () => {
       >
         {sortedPlaylists.map((playlist) => (
           <PlaylistCard
-            key={playlist.id}
-            playlist={playlist}
+            key={playlist._id}
+            playlist={{
+              id: playlist._id,
+              title: playlist.name,
+              subtitle: playlist.description || "No description",
+              image: playlist.coverImage || "/default-playlist.jpg",
+              likes: playlist.likes,
+              songs: playlist.songs?.length || 0,
+              totalLikes: playlist.totalLikes || 0,
+              featured: false,
+            }}
             className={!gridView ? "flex flex-row items-center gap-6" : ""}
           />
         ))}

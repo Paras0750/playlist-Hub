@@ -18,7 +18,9 @@ function App() {
           setUser({
             id: user.data.user.id,
             name: user.data.user.name,
+            image: user.data.user.image,
             isAuthenticated: true,
+            savedPlaylists: user.data.user.savedPlaylists ?? [],
           })
         );
       } catch (err) {

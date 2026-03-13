@@ -2,6 +2,10 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { Playlist } from "./playlist.types";
 import api from "@/services/api";
 
+type ToggleSavePlaylistResponse = {
+  playlistId: string;
+  saved: boolean;
+};
 
 export const fetchAllPlaylists = createAsyncThunk<Playlist[], void>(
   "",
@@ -64,13 +68,13 @@ export const fetchPublicPlaylists = createAsyncThunk<Playlist[], void>(
   },
 );
 
-export const toggleSavePlaylist = createAsyncThunk<Playlist, string>(
+export const toggleSavePlaylist = createAsyncThunk<ToggleSavePlaylistResponse, string>(
   "playlist/toggleSave",
   async (playlistId, { rejectWithValue }) => {
     try {
-      const res = await api.post(`/playlists/${playlistId}/save`);
+      const res = await api.post(`/playlists/${playlistId}/togglesave`);
 
-      return res.data as Playlist;
+      return res.data as ToggleSavePlaylistResponse;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to toggle playlist save",

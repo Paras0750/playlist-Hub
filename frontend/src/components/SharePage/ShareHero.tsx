@@ -1,6 +1,4 @@
 import React from "react";
-import LinkInput from "./LinkInput";
-import PlatformIndicators from "./PlatformIndicator";
 
 const ShareHero: React.FC = () => {
   return (

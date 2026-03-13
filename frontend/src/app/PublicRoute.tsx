@@ -4,10 +4,14 @@ import type { JSX } from "react/jsx-dev-runtime";
 
 
 const PublicRoute = ({ children }: { children: JSX.Element }) => {
-  const token = useAppSelector((state) => state.auth.token);
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.user.isAuthenticated,
+  );
 
-  if (token) {
+  if (isAuthenticated) {
+
     return <Navigate to="/" replace />;
+    
   }
 
   return children;

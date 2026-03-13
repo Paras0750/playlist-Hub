@@ -2,7 +2,9 @@ export interface AuthState {
   user: {
     id: string;
     name: string;
+    image: string;
     isAuthenticated: boolean;
-  } | null;
+    savedPlaylists: string[];
+  };
   loading: boolean;
 }

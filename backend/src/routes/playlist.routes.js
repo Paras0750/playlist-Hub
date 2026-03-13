@@ -4,6 +4,7 @@ import {
   getPlaylistById,
   getPublicPlaylists,
   toggleLike,
+  toggleSavePlaylist,
 } from "../controllers/playlistControllers/playlist.controller.js";
 
 import  verifyJWT  from "../middlewares/authMiddleware.js";
@@ -22,7 +23,7 @@ router.post("/", verifyJWT,upload.single("image") ,createPlaylist);
 // router.patch("/:id", verifyJWT, updatePlaylist);
 // router.delete("/:id", verifyJWT, deletePlaylist);
 router.post("/:id/togglelike", verifyJWT, toggleLike);
-// router.post("/:id/toggleSave", verifyJWT, toggleSave);
+router.post("/:id/togglesave", verifyJWT, toggleSavePlaylist);
 
 
 

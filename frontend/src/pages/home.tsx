@@ -4,7 +4,6 @@ import Hero from "@/components/Hero/Hero";
 import PlaylistCard from "@/components/PlaylistCard/PlaylistCard";
 import api from "@/services/api";
 import type { BackendPlaylist } from "@/features/playlist/playlist.types";
-import { useAppSelector } from "@/hooks/useAppSelector";
 const Home: React.FC = () => {
   const filterRef = useRef<HTMLDivElement | null>(null);
 

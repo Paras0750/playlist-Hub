@@ -103,7 +103,10 @@ const SignupPage: React.FC = () => {
     dispatch(
       setUser({
         id: response.data.id,
-        name: response.data.username
+        name: response.data.username,
+        image: response.data.image ?? "",
+        isAuthenticated: true,
+        savedPlaylists: response.data.savedPlaylists ?? [],
       })
     );
 

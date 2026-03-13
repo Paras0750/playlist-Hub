@@ -103,7 +103,7 @@ export const getAllPlaylists = async (req, res) => {
 export const getPlaylistById = async (req, res) => {
   const playlist = await Playlist.findById(req.params.id).populate(
     "owner",
-    "username email",
+    "username email image",
   );
 
   if (!playlist) {
@@ -121,11 +121,8 @@ export const getPublicPlaylists = async (req, res) => {
 };
 
 export const getMyPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({
-    owner: req.user._id,
-  });
-
-  res.json(playlists);
+  const user = await User.findById(req.params.id).populate("myPlaylist");
+  res.json(user.myPlaylist);
 };
 export const toggleLike = async(req,res)=>{
 
@@ -134,12 +131,7 @@ export const toggleLike = async(req,res)=>{
   if (!playlist) {  
     throw new ApiError(404, "Playlist not found");
   }
-
-
-
-
  const userId = req.user.id;
-
 const alreadyLiked = playlist.likes.some(
   (id) => id?.toString() === userId
 );
@@ -167,35 +159,49 @@ if (alreadyLiked) {
   res.json(alreadyLiked);
 }
 export const getSavedPlaylists = async (req, res) => {
-  const playlists = await Playlist.find({
-    likes: req.user.id,
-  });
+  const user = await User.findById(req.params.id).populate("savedPlaylists");
 
-  res.json(playlists);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.json({
+    savedPlaylists: user.savedPlaylists ?? [],
+  });
 };
 
 export const toggleSavePlaylist = async (req, res) => {
-  const playlist = await Playlist.findById(req.params.id);
+  const [playlist, user] = await Promise.all([
+    Playlist.findById(req.params.id),
+    User.findById(req.user.id),
+  ]);
 
   if (!playlist) {
     throw new ApiError(404, "Playlist not found");
   }
 
-  const userId = req.user._id.toString();
-
-  const alreadySaved = playlist.likes.some((id) => id.toString() === userId);
-
-  if (alreadySaved) {
-    playlist.likes = playlist.likes.filter((id) => id.toString() !== userId);
-  } else {
-    playlist.likes.push(req.user._id);
+  if (!user) {
+    throw new ApiError(404, "User not found");
   }
 
-  playlist.totalLikes = playlist.likes.length;
+  const playlistId = playlist._id.toString();
+  const savedPlaylists = user.savedPlaylists ?? [];
+  const alreadySaved = savedPlaylists.some((id) => id.toString() === playlistId);
 
-  await playlist.save();
+  if (alreadySaved) {
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { savedPlaylists: playlist._id },
+    });
+  } else {
+    await User.findByIdAndUpdate(user._id, {
+      $addToSet: { savedPlaylists: playlist._id },
+    });
+  }
 
-  res.json(playlist);
+  res.json({
+    playlistId,
+    saved: !alreadySaved,
+  });
 };
 
 
