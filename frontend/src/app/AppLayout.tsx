@@ -2,8 +2,12 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import NavBar from "@/components/Navbar/navBar";
+import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 
-const AppLayout: React.FC = () => {
+const AppContent: React.FC = () => {
+  const { isCollapsed } = useSidebar();
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
   return (
     <div
       className="
@@ -15,18 +19,34 @@ const AppLayout: React.FC = () => {
         to-[#e8f6ff]
       "
     >
+      {/* Sidebar — on mobile it renders as fixed overlay, so no aside needed in flow */}
+      {!isMobile && (
+        <aside
+          className={`shrink-0 sticky top-0 h-screen transition-all duration-300
+            ${isCollapsed ? "w-24" : "w-72"}`}
+        >
+          <Sidebar />
+        </aside>
+      )}
 
-      <aside className="w-72 shrink-0 sticky top-0 h-screen">
-        <Sidebar />
-      </aside>
+      {/* Mobile sidebar (renders itself as fixed overlay) */}
+      {isMobile && <Sidebar />}
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <NavBar />
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
-
       </div>
     </div>
+  );
+};
+
+const AppLayout: React.FC = () => {
+  return (
+    <SidebarProvider>
+      <AppContent />
+    </SidebarProvider>
   );
 };
 

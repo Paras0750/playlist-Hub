@@ -1,10 +1,17 @@
+import { useSidebar } from "@/context/SidebarContext";
 
 const SidebarHead: React.FC = () => {
-  return (
-    <div className="font-headingText w-full  flex justify-center backdrop-blur-3xl cursor-default text-2xl font-bold tracking-wide text-primaryText">
-      PlaylistHub
-    </div>
-  )
-}
+  const { isCollapsed } = useSidebar();
 
-export default SidebarHead
+  return (
+    <div className="font-headingText w-full flex justify-center backdrop-blur-3xl cursor-default text-2xl font-bold tracking-wide text-primaryText">
+      {isCollapsed ? (
+        <span className="text-xl">P</span>
+      ) : (
+        <span>PlaylistHub</span>
+      )}
+    </div>
+  );
+};
+
+export default SidebarHead;
