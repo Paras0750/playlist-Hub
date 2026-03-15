@@ -4,6 +4,7 @@ import cors from "cors";
 import routes from "./routes/routes.js";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./db/database.js";
+import errorHandler from "./middlewares/errorMiddleware.js";
 
 
 
@@ -25,6 +26,7 @@ connectDB();
 
 
 app.use("/api/v1", routes);
+app.use(errorHandler);
 
 
 

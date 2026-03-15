@@ -2,6 +2,7 @@ import express from "express";
 import {
   createPlaylist,
   getPlaylistById,
+  getPlaylistTracks,
   getPublicPlaylists,
   toggleLike,
   toggleSavePlaylist,
@@ -14,7 +15,7 @@ import upload from "../middlewares/multer.middleware.js";
 const router = express.Router();
 router.get("/fetchPublic", getPublicPlaylists);
 router.get("/:id", getPlaylistById);
-// router.get('/:id/tracks',getPlaylistTracks);
+router.get('/:id/tracks', getPlaylistTracks);
 // router.get("/me", verifyJWT, getMyPlaylists);
 router.post("/", verifyJWT,upload.single("image") ,createPlaylist);
 

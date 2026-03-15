@@ -1,4 +1,5 @@
  import mongoose from "mongoose";
+import { songSchema } from "./song.schema.js";
 
 const userSchema = mongoose.Schema({
     username : {
@@ -51,11 +52,10 @@ const userSchema = mongoose.Schema({
         }],
         default : []
     },
-    songs : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "Song"
-    }
-    ,
+    songs: {
+      type: [songSchema],
+      default: []
+    },
     refreshToken : {
         type : String
     }

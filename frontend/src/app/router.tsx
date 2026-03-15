@@ -41,12 +41,12 @@ const Router = () => {
           </ProtectedRoute>
 
         } />
-        
+       
       </Route>
-      <Route path="/add-songs" element={
-          
+       <Route path="/add-songs" element={
+          <ProtectedRoute>
             <AddSongsPage />
-
+          </ProtectedRoute>
         } />
       <Route path="/create" element={
         <ProtectedRoute><CreatePlaylist /></ProtectedRoute>}

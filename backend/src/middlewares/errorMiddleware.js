@@ -1,4 +1,5 @@
 const errorHandler = (err, req, res, next) => {
+  void next;
   console.error(err.stack);
 
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
@@ -31,4 +32,4 @@ const errorHandler = (err, req, res, next) => {
   });
 };
 
-module.exports = errorHandler;
+export default errorHandler;

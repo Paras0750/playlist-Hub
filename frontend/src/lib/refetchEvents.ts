@@ -1,6 +1,7 @@
 export type RefetchEventDetail =
   | { type: "myPlaylists" }
   | { type: "savedPlaylists" }
+  | { type: "savedSongs" }
   | { type: "playlistById"; playlistId: string };
 
 const REFETCH_EVENT_NAME = "playlisthub:refetch";

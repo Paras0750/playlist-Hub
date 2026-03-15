@@ -112,6 +112,31 @@ export const getPlaylistById = async (req, res) => {
   
   res.json(playlist);
 }
+
+export const getPlaylistTracks = async (req, res, next) => {
+  try {
+    const playlist = await Playlist.findById(req.params.id).select("songs");
+
+    if (!playlist) {
+      throw new ApiError(404, "Playlist not found");
+    }
+
+    const tracks = [...(playlist.songs ?? [])].map((song) => ({
+      id: song.spotifyId,
+      title: song.name,
+      artist: Array.isArray(song.artists) ? song.artists.join(", ") : "",
+      album: song.album ?? "",
+      durationMs: song.durationMs ?? 0,
+      coverImageUrl: song.coverImageUrl ?? "",
+      spotifyUrl: song.spotifyUrl ?? "",
+      addedAt: song.addedAt ? new Date(song.addedAt).toISOString() : null,
+    }));
+
+    res.json({ tracks });
+  } catch (error) {
+    next(error);
+  }
+};
 export const getPublicPlaylists = async (req, res) => {
   const playlists = await Playlist.find({ isPublic: true }).populate(
     "owner",

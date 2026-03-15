@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { songSchema } from "./song.schema.js";
 
 const playlistSchema = mongoose.Schema({
     name: {
@@ -25,18 +26,10 @@ const playlistSchema = mongoose.Schema({
       ref: "User",
       required: true,
     },
-    songs: [
-      {
-        spotifyId: {
-          type: String, 
-          required: true,
-        },
-        addedAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    songs: {
+      type: [songSchema],
+      default: [],
+    },
     isPublic: {
       type: Boolean,
       default: true,

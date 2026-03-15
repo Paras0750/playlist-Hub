@@ -1,3 +1,5 @@
+import type { BackendSong } from "@/features/songs/song.types";
+
 export interface Playlist {
   title: string;
   description: string;
@@ -24,7 +26,7 @@ export interface BackendPlaylist {
     image : string;
   };
 
-  songs: string[];
+  songs: BackendSong[];
 
   tags: string[];
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import NavBar from "@/components/Navbar/navBar";
+import Miniplayer from "@/components/Miniplayer/Miniplayer";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 
 const AppContent: React.FC = () => {
@@ -17,6 +18,7 @@ const AppContent: React.FC = () => {
         from-[#efe9ff]
         via-[#f6f3ff]
         to-[#e8f6ff]
+        pb-24 
       "
     >
       {/* Sidebar — on mobile it renders as fixed overlay, so no aside needed in flow */}
@@ -38,6 +40,10 @@ const AppContent: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      <Miniplayer
+        className={!isMobile ? (isCollapsed ? "pl-24" : "pl-72") : ""}
+      />
     </div>
   );
 };
