@@ -5,14 +5,16 @@ import routes from "./routes/routes.js";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./db/database.js";
 import errorHandler from "./middlewares/errorMiddleware.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 
 
 const app = express();
 app.use(cookieParser());
 app.use(cors(
   {
-    origin: "http://localhost:5173",
+    origin: process.env.BASE_URL ,
     credentials: true
   }
 ));
