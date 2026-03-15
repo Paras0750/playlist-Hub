@@ -42,7 +42,7 @@ const AppContent: React.FC = () => {
       </div>
 
       <Miniplayer
-        className={!isMobile ? (isCollapsed ? "pl-24" : "pl-72") : ""}
+        
       />
     </div>
   );
