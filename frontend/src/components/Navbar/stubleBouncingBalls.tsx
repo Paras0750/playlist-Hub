@@ -10,14 +10,9 @@ const SubtleFloatingBalls = () => {
   return (
     <div className="
   absolute
-  left-[50vw] 
-  sm:left-[33vw]
-  md:left-[35vw]
-  lg:left-[40vw]
-  xl:left-[49vw]
-  flex items-center justify-center gap-3
-  p-6 sm:p-8 md:p-10 lg:p-12
-  rounded-xl
+  right-4
+  flex items-center justify-center gap-1.5 sm:gap-2
+  pr-2 sm:pr-4
 ">
 
       {balls.map((ball, index) => (

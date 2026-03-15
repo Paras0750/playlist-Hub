@@ -23,10 +23,10 @@ const Filterdiv = forwardRef<HTMLDivElement>((_, ref) => {
   );
 
   return (
-    <section ref={ref} className="mx-auto mt-12 mb-8 w-[96%] max-w-7xl">
+    <section ref={ref} className="mx-2 sm:mx-5 mt-8 sm:mt-12 mb-6 sm:mb-8 w-[calc(100%-16px)] sm:w-[96%] max-w-7xl">
 
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-primaryText">
+        <h2 className="text-xl sm:text-2xl font-bold text-primaryText">
           Top Genres
         </h2>
 
@@ -34,18 +34,18 @@ const Filterdiv = forwardRef<HTMLDivElement>((_, ref) => {
           onClick={() => setShowAll((prev) => !prev)}
           className="
             rounded-full bg-accentText/10
-            px-4 py-2 text-xs
+            px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs
             font-subHeadingText text-accentText
             transition-all duration-200
             hover:bg-accentText/30
-            active:scale-95
+            active:scale-95 shrink-0 ml-2
           "
         >
           {showAll ? "Show less" : "View all"}
         </button>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="mt-4 sm:mt-6 flex sm:flex-wrap gap-2 sm:gap-3 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0 scrollbar-hide">
         {visibleGenres.map((genre) => (
           <Filterbtn key={genre} label={genre} />
         ))}

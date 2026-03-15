@@ -11,10 +11,10 @@ function Filterbtn({ label, active = false, onClick }: Props) {
     <button
       onClick={onClick}
       className={`
-        px-4 py-2 rounded-full text-xs font-subHeadingText
-        shadow-2xl shadow-red-200
+        px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-subHeadingText
+        shadow-md sm:shadow-2xl shadow-red-200
         transition-all duration-300
-        cursor-pointer
+        cursor-pointer shrink-0
 
         ${
           active

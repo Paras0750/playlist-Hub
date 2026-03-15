@@ -1,7 +1,7 @@
 import axios, { type InternalAxiosRequestConfig } from "axios";
-
+import { BASE_URL } from "../../config";
 const api = axios.create({
-    baseURL : "http://localhost:3000/api/v1",
+    baseURL : `${BASE_URL}/api/v1`,
     withCredentials: true,
 })
 

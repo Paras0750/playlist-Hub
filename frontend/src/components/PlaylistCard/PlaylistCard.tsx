@@ -81,59 +81,59 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
     <div
       className={`
         w-full rounded-2xl bg-gradient-to-br
-        from-[#fbf7fc] to-white shadow-md px-4 py-3 relative
-        transition-all duration-300 hover:-translate-y-2 hover:shadow-xl 
+        from-[#fbf7fc] to-white shadow-md p-3 sm:p-4 relative
+        transition-all duration-300 hover:-translate-y-2 hover:shadow-xl flex flex-col
         ${className}
       `}
     >
-
+      {/* Cover Image */}
       <div
-        className="relative h-44 w-full rounded-xl bg-size-[100%_100%] bg-repeat-y bg-center"
+        className="relative aspect-square w-full rounded-xl bg-cover bg-center overflow-hidden"
         style={{ backgroundImage: `url(${image || "/Hero.png"})` }}
       >
         {featured && (
-          <span className="absolute top-3 left-3 text-[10px] px-3 py-1 rounded-full bg-white/40 backdrop-blur-md text-white tracking-widest">
+          <span className="absolute top-2 left-2 sm:top-3 sm:left-3 text-[9px] sm:text-[10px] px-2 py-1 sm:px-3 sm:py-1 rounded-full bg-white/40 backdrop-blur-md text-white tracking-widest font-medium">
             FEATURED
           </span>
         )}
-
 
         <button
           type="button"
           onClick={handleSave}
           disabled={isSaving || !playlistId}
-          className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow hover:scale-110 transition disabled:cursor-not-allowed disabled:opacity-70"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/80 backdrop-blur-md p-1.5 sm:p-2 rounded-full shadow hover:scale-110 transition disabled:cursor-not-allowed disabled:opacity-70"
         >
           <Heart
-            size={14}
+            size={16}
             className={isSaved ? "text-red-500 fill-red-500" : "text-gray-500"}
           />
         </button>
       </div>
 
-
-      <div className="mt-4">
-        <h3 className="text-lg font-bold text-[#2e2844] truncate">
+      {/* Info Section */}
+      <div className="mt-3 sm:mt-4 flex-1">
+        <h3 className="text-base sm:text-lg font-bold text-[#2e2844] line-clamp-1">
           {title}
         </h3>
-        <p className="text-neutral-500 text-sm mt-1 truncate">
+        <p className="text-neutral-500 text-xs sm:text-sm mt-0.5 sm:mt-1 line-clamp-1">
           {subtitle || ""}
         </p>
       </div>
 
-      <div className="border-t border-neutral-200 my-3"></div>
+      <div className="border-t border-neutral-200 my-2.5 sm:my-3"></div>
 
-      <div className="flex items-center justify-between text-neutral-500 text-xs relative  ">
-        <div className="flex items-center gap-4">
-          {likes && (
+      {/* Footer / Stats */}
+      <div className="flex items-center justify-between text-neutral-500 text-[10px] sm:text-xs">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+          {likes !== undefined && (
             <div className="flex items-center gap-1">
-              <Heart size={14} />
+              <Heart size={12} className="sm:w-[14px] sm:h-[14px]" />
               <span>{likeCount}</span>
             </div>
           )}
           {songs !== undefined && (
             <div className="flex items-center gap-1">
-              <Clock size={14} />
+              <Clock size={12} className="sm:w-[14px] sm:h-[14px]" />
               <span>{songs} Songs</span>
             </div>
           )}
@@ -141,9 +141,9 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({
 
         <button
           onClick={handlePlay}
-          className=" h-10 w-10 rounded-full bg-primaryText flex items-center justify-center shadow-md hover:scale-105 transition-transform"
+          className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primaryText flex items-center justify-center shadow-md hover:scale-105 transition-transform shrink-0 ml-2"
         >
-          <Play size={16} color="white" fill="white" />
+          <Play size={14} className="sm:w-4 sm:h-4 text-white fill-white ml-0.5" />
         </button>
       </div>
     </div>
